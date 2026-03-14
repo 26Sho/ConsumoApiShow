@@ -1,0 +1,15 @@
+<div class="list" *ngIf="apisList.length > 0; else noData">
+
+  <app-api-card
+    *ngFor="let api of apisList"
+    [apis]="api"
+    (seleccionar)="seleccionar.emit($event)">
+  </app-api-card>
+
+</div>
+
+<ng-template #noData>
+  <div class="empty">
+    No hay datos disponibles.
+  </div>
+</ng-template>

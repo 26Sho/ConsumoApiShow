@@ -1,0 +1,24 @@
+<div class="card" *ngIf="apis" (click)="onSelect()">
+<div class="card" *ngIf="apis"></div>
+
+  <img *ngIf="apis.image"
+       [src]="apis.image.medium"
+       alt="{{ apis.name }}">
+       
+  <div class="card-header">
+    <h2>{{ apis.name }}</h2>
+    <span class="status" [ngClass]="{
+        'active': apis.status === 'Running',
+        'inactive': apis.status !== 'Running'
+      }">
+      {{ apis.status }}
+    </span>
+  </div>
+
+  <div class="card-body">
+    <p><strong>ID:</strong> {{ apis.id }}</p>
+    <p><strong>Idioma:</strong> {{ apis.language }}</p>
+    <p><strong>Géneros:</strong> {{ apis.genres }}</p>
+  </div>
+
+</div>

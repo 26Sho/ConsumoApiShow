@@ -1,0 +1,119 @@
+<div class="container">
+
+  <!-- Información del Show -->
+  <div class="show-info">
+    <h1>{{show?.name}}</h1>
+
+    <img [src]="show?.image?.original || 'assets/fallback-show.jpg'" [alt]="show?.name" class="show-img">
+
+    <div class="description" [innerHTML]="show?.summary"></div>
+  </div>
+
+  <!-- Buscador y filtro -->
+  <div class="controls">
+    <input type="text" placeholder="Buscar episodio..." [(ngModel)]="searchText">
+
+    <select [(ngModel)]="selectedSeason">
+
+      <option [ngValue]="0">Todas las temporadas</option>
+
+      <option *ngFor="let season of seasons" [ngValue]="season.number">
+        Temporada {{season.number}}
+      </option>
+
+    </select>
+  </div>
+
+  <!-- Lista de temporadas -->
+  <div *ngFor="let season of seasons" class="season">
+
+    <div *ngIf="selectedSeason === 0 || selectedSeason === season.number">
+
+      <h2>
+        Temporada {{season.number}}
+        <span class="episode-count">
+          ({{getEpisodesCount(season.number)}} episodios)
+        </span>
+      </h2>
+
+      <div class="episodes">
+
+        <ng-container *ngFor="let ep of episodes">
+
+          <div class="episode-card"
+            *ngIf="ep.season === season.number && (ep.name || '').toLowerCase().includes(searchText.toLowerCase())">
+
+            <!-- Imagen del episodio -->
+            <img [src]="ep.image?.medium || show?.image?.medium" [alt]="ep.name" class="episode-img">
+
+            <!-- Nombre del episodio -->
+            <h3>{{ ep.name || ('Episodio ' + ep.number) }}</h3>
+
+            <p>Capítulo {{ep.number}}</p>
+
+            <!-- Botón favorito -->
+            <button (click)="toggleFavorite(ep)">
+              {{ isFavorite(ep.id) ? '💔 Quitar' : '❤️ Favorito' }}
+            </button>
+
+            <!-- BOTÓN NUEVO DE DETALLE -->
+            <button (click)="viewDetail(ep)">
+              🔎 Ver detalle
+            </button>
+
+          </div>
+
+        </ng-container>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Favoritos -->
+   
+  <div class="favorites">
+
+    <h2>Episodios Favoritos</h2>
+
+    <div *ngFor="let fav of favorites" class="favorite-card">
+
+      <h4>{{fav.name}}</h4>
+
+      <button (click)="removeFavorite(fav.id)">
+        ❌ Quitar
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- DETALLE DEL EPISODIO -->
+
+  <div class="episode-detail" *ngIf="selectedEpisode">
+
+    <div class="detail-card">
+
+      <button class="close-btn" (click)="closeDetail()">✖</button>
+
+      <br>
+
+      <img
+        [src]="selectedEpisode.image?.original || show?.image?.original"
+        [alt]="selectedEpisode.name">
+
+      <h2>{{selectedEpisode.name}}</h2>
+
+      <p><b>Temporada:</b> {{selectedEpisode.season}}</p>
+
+      <p><b>Episodio:</b> {{selectedEpisode.number}}</p>
+
+      <div [innerHTML]="selectedEpisode.summary"></div>
+
+    </div>
+
+  </div>
+
+</div>
