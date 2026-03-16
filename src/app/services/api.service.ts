@@ -17,6 +17,15 @@ export class APIService {
     return this.http.get<API>(this.url);
   }
 
+  getCast() {
+    return this.http.get<any[]>('https://api.tvmaze.com/shows/32242/cast');
+  }
+
+  // NUEVO: traer información completa de la persona
+  getPersonInfo(id: number) {
+    return this.http.get<any>(`https://api.tvmaze.com/people/${id}`);
+  }
+
   searchSSeries(query: string) {
     return this.http.get<any[]>(`https://api.tvmaze.com/search/shows?q=${query}`);
   }

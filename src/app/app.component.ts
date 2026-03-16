@@ -4,7 +4,7 @@ import { APIService } from './services/api.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']  // corregido
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
 
@@ -12,6 +12,12 @@ export class AppComponent implements OnInit {
   seasons: any[] = [];
   episodes: any[] = [];
   selectedEpisode: any = null;
+
+  // periodistas
+  cast: any[] = [];
+
+  // PERSON INFO
+  personInfo: any = null;
 
   // buscador
   searchText: string = '';
@@ -25,31 +31,52 @@ export class AppComponent implements OnInit {
   constructor(private apiService: APIService) { }
 
   ngOnInit(): void {
-    // consumo de API
+
     this.apiService.getNFLToday().subscribe((data: any) => {
 
       this.show = data;
-
-      // temporadas
       this.seasons = data._embedded?.seasons || [];
-
-      // episodios
-      if (data._embedded?.episodes) {
-        this.episodes = data._embedded.episodes;
-      } else {
-        this.episodes = [];
-      }
+      this.episodes = data._embedded?.episodes || [];
 
     });
 
-    // cargar favoritos guardados
+    // traer periodistas
+    this.apiService.getCast().subscribe((data: any[]) => {
+      this.cast = data;
+    });
+
     const savedFavorites = localStorage.getItem('favorites');
     if (savedFavorites) {
       this.favorites = JSON.parse(savedFavorites);
     }
   }
 
-  // agregar favorito
+  get filteredEpisodes() {
+
+    const text = this.searchText.toLowerCase();
+
+    return this.episodes.filter(ep => {
+
+      const name = (ep.name || '').toLowerCase();
+
+      const summary = (ep.summary || '')
+        .replace(/<[^>]*>/g, '') // elimina etiquetas HTML
+        .toLowerCase();
+
+      const matchText =
+        name.includes(text) ||
+        summary.includes(text);
+
+      const matchSeason =
+        this.selectedSeason === 0 ||
+        ep.season === this.selectedSeason;
+
+      return matchText && matchSeason;
+
+    });
+
+  }
+
   addFavorite(episode: any) {
     const exists = this.favorites.find(fav => fav.id === episode.id);
     if (!exists) {
@@ -58,18 +85,15 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // eliminar favorito
   removeFavorite(id: number) {
     this.favorites = this.favorites.filter(fav => fav.id !== id);
     localStorage.setItem('favorites', JSON.stringify(this.favorites));
   }
 
-  // verificar si es favorito
   isFavorite(id: number) {
     return this.favorites.some(fav => fav.id === id);
   }
 
-  // toggle favorito: agrega o quita
   toggleFavorite(episode: any) {
     if (this.isFavorite(episode.id)) {
       this.removeFavorite(episode.id);
@@ -78,7 +102,6 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // contador de episodios por temporada
   getEpisodesCount(seasonNumber: number): number {
     return this.episodes.filter(e => e.season === seasonNumber).length;
   }
@@ -90,5 +113,20 @@ export class AppComponent implements OnInit {
   closeDetail() {
     this.selectedEpisode = null;
   }
-}
 
+  // CLICK EN PERIODISTA
+  viewCastDetail(person: any) {
+
+    const id = person.person.id;
+
+    this.apiService.getPersonInfo(id).subscribe((data: any) => {
+      this.personInfo = data;
+    });
+
+  }
+
+  closePersonDetail() {
+    this.personInfo = null;
+  }
+
+}
