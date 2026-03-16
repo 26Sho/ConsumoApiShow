@@ -129,22 +129,22 @@ export class AppComponent implements OnInit {
     this.personInfo = null;
   }
 
-  getAge(birthday: string): number {
+  getAge(birthday: string): string {
 
-  if (!birthday) return 0;
+    if (!birthday) return "Sin registro";
 
-  const birthDate = new Date(birthday);
-  const today = new Date();
+    const birthDate = new Date(birthday);
+    const today = new Date();
 
-  let age = today.getFullYear() - birthDate.getFullYear();
+    let age = today.getFullYear() - birthDate.getFullYear();
 
-  const month = today.getMonth() - birthDate.getMonth();
+    const month = today.getMonth() - birthDate.getMonth();
 
-  if (month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
+    if (month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    return age.toString();
   }
-
-  return age;
-}
 
 }

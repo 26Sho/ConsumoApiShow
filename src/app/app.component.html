@@ -152,7 +152,7 @@
 
       <p><b>Edad:</b> {{ getAge(personInfo.birthday) }}</p>
 
-      <p><b>Cumpleaños:</b> {{personInfo.birthday}}</p>
+      <p><b>Cumpleaños:</b> {{personInfo.birthday || 'Sin registro'}}</p>
 
       <p><b>Fallecimiento:</b> {{personInfo.deathday || 'Vivo'}}</p>
 
