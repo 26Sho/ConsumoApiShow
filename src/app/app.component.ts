@@ -13,19 +13,14 @@ export class AppComponent implements OnInit {
   episodes: any[] = [];
   selectedEpisode: any = null;
 
-  // periodistas
   cast: any[] = [];
 
-  // PERSON INFO
   personInfo: any = null;
 
-  // buscador
   searchText: string = '';
 
-  // filtro temporada
   selectedSeason: number = 0;
 
-  // favoritos
   favorites: any[] = [];
 
   constructor(private apiService: APIService) { }
@@ -40,7 +35,6 @@ export class AppComponent implements OnInit {
 
     });
 
-    // traer periodistas
     this.apiService.getCast().subscribe((data: any[]) => {
       this.cast = data;
     });
@@ -60,7 +54,7 @@ export class AppComponent implements OnInit {
       const name = (ep.name || '').toLowerCase();
 
       const summary = (ep.summary || '')
-        .replace(/<[^>]*>/g, '') // elimina etiquetas HTML
+        .replace(/<[^>]*>/g, '') 
         .toLowerCase();
 
       const matchText =
@@ -114,7 +108,6 @@ export class AppComponent implements OnInit {
     this.selectedEpisode = null;
   }
 
-  // CLICK EN PERIODISTA
   viewCastDetail(person: any) {
 
     const id = person.person.id;

@@ -1,6 +1,5 @@
 <div class="container">
 
-  <!-- Información del Show -->
   <div class="show-info">
     <h1>{{show?.name}}</h1>
 
@@ -12,7 +11,6 @@
     <div class="description" [innerHTML]="show?.summary"></div>
   </div>
 
-  <!-- Buscador y filtro -->
   <div class="controls">
 
     <input
@@ -31,8 +29,6 @@
     </select>
 
   </div>
-
-  <!-- LISTA DE TEMPORADAS -->
 
   <div *ngFor="let season of seasons" class="season">
 
@@ -59,23 +55,19 @@
               )
             ">
 
-            <!-- Imagen episodio -->
             <img
               [src]="ep.image?.medium || show?.image?.medium"
               [alt]="ep.name"
               class="episode-img">
 
-            <!-- Nombre episodio -->
             <h3>{{ ep.name || ('Episodio ' + ep.number) }}</h3>
 
             <p>Capítulo {{ep.number}}</p>
 
-            <!-- FAVORITO -->
             <button (click)="toggleFavorite(ep)">
               {{ isFavorite(ep.id) ? '💔 Quitar' : '❤️ Favorito' }}
             </button>
 
-            <!-- DETALLE -->
             <button (click)="viewDetail(ep)">
               🔎 Ver detalle
             </button>
@@ -89,8 +81,6 @@
     </div>
 
   </div>
-
-  <!-- FAVORITOS -->
 
   <div class="favorites">
 
@@ -107,8 +97,6 @@
     </div>
 
   </div>
-
-  <!-- DETALLE DEL EPISODIO -->
 
   <div class="episode-detail" *ngIf="selectedEpisode">
 
@@ -131,8 +119,6 @@
     </div>
 
   </div>
-
-  <!-- DETALLE DEL PERIODISTA -->
 
   <div class="episode-detail" *ngIf="personInfo">
 
@@ -159,8 +145,6 @@
     </div>
 
   </div>
-
-  <!-- PERIODISTAS -->
 
   <div class="cast">
 
