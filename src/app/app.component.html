@@ -1,5 +1,9 @@
 <div class="container">
 
+  <div *ngIf="offlineMessage" class="offline-msg">
+    ⚠️ Necesitas conexión a internet para ver los episodios
+  </div>
+
   <div class="show-info">
     <h1>{{show?.name}}</h1>
 
@@ -11,7 +15,7 @@
     <div class="description" [innerHTML]="show?.summary"></div>
   </div>
 
-  <div class="controls">
+  <div class="controls" *ngIf="episodes.length > 0">
 
     <input
       type="text"
@@ -30,56 +34,64 @@
 
   </div>
 
-  <div *ngFor="let season of seasons" class="season">
+  <div *ngIf="episodes.length > 0">
 
-    <div *ngIf="selectedSeason === 0 || selectedSeason === season.number">
+    <div *ngFor="let season of seasons" class="season">
 
-      <h2>
-        Temporada {{season.number}}
-        <span class="episode-count">
-          ({{getEpisodesCount(season.number)}} episodios)
-        </span>
-      </h2>
+      <div *ngIf="selectedSeason === 0 || selectedSeason === season.number">
 
-      <div class="episodes">
+        <h2>
+          Temporada {{season.number}}
+          <span class="episode-count">
+            ({{getEpisodesCount(season.number)}} episodios)
+          </span>
+        </h2>
 
-        <ng-container *ngFor="let ep of filteredEpisodes">
+        <div class="episodes">
 
-          <div
-            class="episode-card"
-            *ngIf="
-              ep.season === season.number &&
-              (
-                (ep.name || '').toLowerCase().includes(searchText.toLowerCase()) ||
-                (ep.summary || '').toLowerCase().includes(searchText.toLowerCase())
-              )
-            ">
+          <ng-container *ngFor="let ep of filteredEpisodes">
 
-            <img
-              [src]="ep.image?.medium || show?.image?.medium"
-              [alt]="ep.name"
-              class="episode-img">
+            <div
+              class="episode-card"
+              *ngIf="
+                ep.season === season.number &&
+                (
+                  (ep.name || '').toLowerCase().includes(searchText.toLowerCase()) ||
+                  (ep.summary || '').toLowerCase().includes(searchText.toLowerCase())
+                )
+              ">
 
-            <h3>{{ ep.name || ('Episodio ' + ep.number) }}</h3>
+              <img
+                [src]="ep.image?.medium || show?.image?.medium"
+                [alt]="ep.name"
+                class="episode-img">
 
-            <p>Capítulo {{ep.number}}</p>
+              <h3>{{ ep.name || ('Episodio ' + ep.number) }}</h3>
 
-            <button (click)="toggleFavorite(ep)">
-              {{ isFavorite(ep.id) ? '💔 Quitar' : '❤️ Favorito' }}
-            </button>
+              <p>Capítulo {{ep.number}}</p>
 
-            <button (click)="viewDetail(ep)">
-              🔎 Ver detalle
-            </button>
+              <button (click)="toggleFavorite(ep)">
+                {{ isFavorite(ep.id) ? '💔 Quitar' : '❤️ Favorito' }}
+              </button>
 
-          </div>
+              <button (click)="viewDetail(ep)">
+                🔎 Ver detalle
+              </button>
 
-        </ng-container>
+            </div>
+
+          </ng-container>
+
+        </div>
 
       </div>
 
     </div>
 
+  </div>
+
+  <div *ngIf="!isOnline && episodes.length === 0" class="no-data">
+    ❌ No hay episodios guardados. Conéctate a internet primero.
   </div>
 
   <div class="favorites">

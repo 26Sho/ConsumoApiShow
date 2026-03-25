@@ -26,5 +26,19 @@
         ]
       }
     }
-  ]
+  ],
+  "dataGroups": [
+  {
+    "name": "episodios-api",
+    "urls": [
+      "https://api.tvmaze.com/shows/32242*"
+    ],
+    "cacheConfig": {
+      "strategy": "freshness",
+      "maxSize": 10,
+      "maxAge": "1d",
+      "timeout": "5s"
+    }
+  }
+]
 }

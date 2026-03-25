@@ -14,34 +14,70 @@ export class AppComponent implements OnInit {
   selectedEpisode: any = null;
 
   cast: any[] = [];
-
   personInfo: any = null;
 
   searchText: string = '';
-
   selectedSeason: number = 0;
 
   favorites: any[] = [];
+
+  isOnline: boolean = navigator.onLine;
+  offlineMessage: boolean = false;
 
   constructor(private apiService: APIService) { }
 
   ngOnInit(): void {
 
-    this.apiService.getNFLToday().subscribe((data: any) => {
-
-      this.show = data;
-      this.seasons = data._embedded?.seasons || [];
-      this.episodes = data._embedded?.episodes || [];
-
+    window.addEventListener('online', () => {
+      this.isOnline = true;
+      this.offlineMessage = false;
+      this.cargarDatos();
     });
 
-    this.apiService.getCast().subscribe((data: any[]) => {
-      this.cast = data;
+    window.addEventListener('offline', () => {
+      this.isOnline = false;
+      this.offlineMessage = true;
     });
+
+    this.cargarDatos();
 
     const savedFavorites = localStorage.getItem('favorites');
     if (savedFavorites) {
       this.favorites = JSON.parse(savedFavorites);
+    }
+  }
+
+  cargarDatos() {
+
+    if (this.isOnline) {
+
+      this.apiService.getNFLToday().subscribe((data: any) => {
+
+        this.show = data;
+        this.seasons = data._embedded?.seasons || [];
+        this.episodes = data._embedded?.episodes || [];
+
+        localStorage.setItem('episodes', JSON.stringify(this.episodes));
+
+      });
+
+      this.apiService.getCast().subscribe((data: any[]) => {
+        this.cast = data;
+      });
+
+    } else {
+
+      this.offlineMessage = true;
+
+      const cacheEpisodes = localStorage.getItem('episodes');
+
+      if (cacheEpisodes) {
+        this.episodes = JSON.parse(cacheEpisodes);
+      } else {
+        this.apiService.getCast().subscribe((data: any[]) => {
+          this.cast = data;
+        });
+      }
     }
   }
 
@@ -54,7 +90,7 @@ export class AppComponent implements OnInit {
       const name = (ep.name || '').toLowerCase();
 
       const summary = (ep.summary || '')
-        .replace(/<[^>]*>/g, '') 
+        .replace(/<[^>]*>/g, '')
         .toLowerCase();
 
       const matchText =
@@ -68,7 +104,6 @@ export class AppComponent implements OnInit {
       return matchText && matchSeason;
 
     });
-
   }
 
   addFavorite(episode: any) {
@@ -112,10 +147,11 @@ export class AppComponent implements OnInit {
 
     const id = person.person.id;
 
+    if (!this.isOnline) return;
+
     this.apiService.getPersonInfo(id).subscribe((data: any) => {
       this.personInfo = data;
     });
-
   }
 
   closePersonDetail() {
