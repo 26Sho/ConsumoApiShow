@@ -37,6 +37,7 @@ export class AppComponent implements OnInit {
     window.addEventListener('offline', () => {
       this.isOnline = false;
       this.offlineMessage = true;
+      this.cargarDatos();
     });
 
     this.cargarDatos();
@@ -52,32 +53,31 @@ export class AppComponent implements OnInit {
     if (this.isOnline) {
 
       this.apiService.getNFLToday().subscribe((data: any) => {
-
         this.show = data;
         this.seasons = data._embedded?.seasons || [];
         this.episodes = data._embedded?.episodes || [];
 
-        localStorage.setItem('episodes', JSON.stringify(this.episodes));
+        this.apiService.getCast().subscribe((castData: any[]) => {
+          this.cast = castData;
+          localStorage.setItem('cast', JSON.stringify(castData));
+        });
 
-      });
-
-      this.apiService.getCast().subscribe((data: any[]) => {
-        this.cast = data;
       });
 
     } else {
 
-      this.offlineMessage = true;
+      this.episodes = [];
+      this.seasons = [];
 
-      const cacheEpisodes = localStorage.getItem('episodes');
+      const castCache = localStorage.getItem('cast');
 
-      if (cacheEpisodes) {
-        this.episodes = JSON.parse(cacheEpisodes);
+      if (castCache) {
+        this.cast = JSON.parse(castCache);
       } else {
-        this.apiService.getCast().subscribe((data: any[]) => {
-          this.cast = data;
-        });
+        this.cast = [];
       }
+
+      this.offlineMessage = true;
     }
   }
 
